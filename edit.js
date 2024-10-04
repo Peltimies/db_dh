@@ -5,7 +5,7 @@ const NewRanomEncounterObject = require('./NewRandomEncounterObject');
 //eslint-disable-next-line new-cap
 const newRandomEncounter = RandomEncounter(NewRanomEncounterObject);
 
-RandomEncounter.create(newRandomEncounter)
+RandomEncounter.findOneAndUpdate(newRandomEncounter)
   .then((doc) => {
     console.log('Encounter created:', NewRanomEncounterObject);
     process.exit(0);

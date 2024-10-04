@@ -1,7 +1,7 @@
 require('./dbconnection'); // koko tiedoston importtaus onnistuu
 
 const RandomEncounter = require('./models/RandomEncounter'); // model
-const NewRandomEncounterObject = require('./NewRandomEncounterObject');
+
 //eslint-disable-next-line new-cap
 //const newRandomEncounter = RandomEncounter(NewRanomEncounterObject);
 

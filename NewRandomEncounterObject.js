@@ -1,12 +1,12 @@
 const NewRanomEncounterObject = {
-  id: '670008af5c0b71bf32a9a903',
-  biome: 'Forest',
+  id: '',
+  biome: 'Leppäsentie 13',
   img: '',
   enc: [
     {
-      name: '',
-      description: '',
-      weight: '',
+      name: 'Teemun Äiti',
+      description: 'TEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEMU',
+      weight: '1',
       img: '',
     },
   ],
