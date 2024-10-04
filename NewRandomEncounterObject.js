@@ -1,12 +1,12 @@
 const NewRanomEncounterObject = {
-  biome: 'The Home of Niko',
+  id: '670008af5c0b71bf32a9a903',
+  biome: 'Forest',
   img: '',
   enc: [
     {
-      name: 'Niko',
-      description:
-        'A wild Niko appears and attacks the party with an extension cord',
-      weight: '1',
+      name: '',
+      description: '',
+      weight: '',
       img: '',
     },
   ],

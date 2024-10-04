@@ -10,7 +10,7 @@ const RandomEncounterSchema = new mongoose.Schema({
     unique: true,
   },
   img: { type: String, require: false },
-  enc: [{ type: [EncounterSchema], required: true }],
+  enc: { type: [EncounterSchema], required: true },
 });
 
 //Muistiinpano, tähän varmaan pitää tehä toinen skeema rollille

@@ -7,7 +7,7 @@ const RandomEncounter = require('./models/RandomEncounter'); // model
 //eslint-disable-next-line new-cap
 
 // deleteOnen arjumentit: olio joka kertoo kohteen
-RandomEncounter.deleteOne({ biome: 'The Home of Niko' })
+RandomEncounter.deleteOne({ biome: 'Wilderness' })
   .then((result) => {
     if (result.deletedCount === 1) {
       // Check if document was deleted
