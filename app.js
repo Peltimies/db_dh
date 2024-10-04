@@ -14,11 +14,9 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 require('./dbconnection');
 
-const index = require('./routes/index');
 const encounters = require('./routes/encounters');
-const reactions = require('./routes/reactions');
-const users = require('./routes/users');
-const realms = require('./routes/realms');
+const randomEncounters = require('./routes/randomEncounters');
+const user = require('./routes/users');
 
 const app = express();
 
@@ -50,11 +48,9 @@ app.use(
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index); // index-reitti
 app.use('/encounters', encounters); // users-reitti
-app.use('/users', users); // users-reitti
-app.use('/reactions', reactions);
-app.use('/realms', realms);
+app.use('/user', user); // users-reitti
+app.use('/randomEncounters', randomEncounters);
 app.use(express.json());
 app.use(
   session({
@@ -82,12 +78,6 @@ app.post('/submit', (req, res) => {
   // Proceed with the request if validation passes
   // ...
 });
-
-app.use('/', index); // index-reitti
-app.use('/users', users); // users-reitti
-app.use('/encounters', encounters);
-app.use('/reactions', reactions);
-app.use('/realms', realms);
 
 // catch 404 and forward to error handler
 //app.use(function (req, res, next) {
