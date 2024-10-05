@@ -39,6 +39,6 @@ router.put('/updateEncImg/:biome/:image', rec.updateEncImg);
 
 // 9) Random Encounterin lisääminen
 //localhost:3000/randomEncounters/addEnc
-router.put('/:id', rec.addEnc);
+router.put('/:id/addEnc', rec.addEnc);
 
 module.exports = router;
