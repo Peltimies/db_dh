@@ -182,6 +182,29 @@ const RandomEncounterController = {
         res.status(500).json({ error: 'Error adding encounter' });
       });
   },
+
+  deleteEnc(req, res) {
+    console.log('Deleting encounter', req.params.biome, req.params.name);
+    RandomEncounter.findOneAndUpdate(
+      {
+        biome: req.params.biome,
+        'enc.name': req.params.name,
+      },
+      {
+        $pull: { enc: { name: req.params.name } },
+      }
+    )
+      .then((updatedEncounter) => {
+        if (!updatedEncounter) {
+          return res.status(404).json({ error: 'Encounter not found' });
+        }
+        res.json(updatedEncounter);
+      })
+      .catch((err) => {
+        console.error('Error deleting encounter:', err);
+        res.status(500).json({ error: 'Error deleting encounter' });
+      });
+  },
 };
 
 module.exports = RandomEncounterController;
