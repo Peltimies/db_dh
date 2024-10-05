@@ -14,8 +14,7 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 require('./dbconnection');
 
-const encounters = require('./routes/encounters');
-const randomEncounters = require('./routes/randomEncounters');
+const randomEncounterRouter = require('./routes/randomEncounters');
 const user = require('./routes/users');
 
 const app = express();
@@ -48,9 +47,8 @@ app.use(
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/encounters', encounters); // users-reitti
 app.use('/user', user); // users-reitti
-app.use('/randomEncounters', randomEncounters);
+app.use('/randomEncounters', randomEncounterRouter);
 app.use(express.json());
 app.use(
   session({

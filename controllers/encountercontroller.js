@@ -1,3 +1,4 @@
+/* eslint-disable quote-props */
 /* eslint-disable new-cap */
 /*
 Kontrolleri on olio, joka sisältää metodeja. Se tehty siksi, että
@@ -21,7 +22,7 @@ const RandomEncounterController = {
         throw error;
       });
   },
-  // 2) Yhden encounterin haku id:n perusteella
+  // 2) Yhden biomen haku id:n perusteella
   findById(req, res) {
     //Mongoose-kantaoperaatio tänne
     //findOne-metodin argumenttina on olio, jossa on hakuehto
@@ -35,47 +36,150 @@ const RandomEncounterController = {
         throw error;
       });
   },
-  // 3) Poistaa encounterin id:n perusteella
+
+  findByBiome(req, res) {
+    RandomEncounter.findOne({ biome: req.params.biome }).then((encounters) => {
+      res.json(encounters);
+    });
+  },
+
+  findByEncounterName(req, res) {
+    RandomEncounter.findOne({
+      biome: req.params.biome,
+      'enc.name': req.params.name,
+    }).then((encounters) => {
+      res.json(encounters);
+    });
+  },
+
   deleteById(req, res) {
-    //Mongoose-kantaoperaatio tänne
-    //findOneAndDelete-metodin argumenttina on olio, jossa on hakuehto
-    //kannassa olevan id:n (_id) on vastattava pyynnön mukana tulevaan id
-    RandomEncounter.findOneAndDelete({ _id: req.params.id })
-      // palautuva promise sisältää poistettavan opiskelijan
-      .then((encounters) => {
-        console.log(`Encounter ${req.params.id} deleted`);
-        res.json(encounters);
+    console.log('Deleting', req.params.id);
+    RandomEncounter.findOneAndDelete({ _id: req.params.id });
+    res.json('Encounter deleted');
+  },
+  updateEncName(req, res) {
+    console.log('Updating name for', req.params.biome, req.params.name);
+    RandomEncounter.findOneAndUpdate(
+      {
+        biome: req.params.biome,
+        'enc.name': req.params.name,
+      },
+      {
+        $set: {
+          // enc alidokumentissa $-merkillä etsitään oikea dokumentti, ja siellä olevan "namen" päälle laitetaan req.body.name
+          'enc.$.name': req.body.name,
+        },
+      }
+    )
+      .then(() => {
+        res.json('Name updated');
       })
-      .catch((error) => {
-        throw error;
+      .catch((err) => {
+        console.error('Error updating name:', err);
+        throw err;
       });
   },
-  // 4) Lisaä uusi encounter
-  create(req, res) {
-    console.log('Creating new encounter roll table');
-    console.log('Request body: ', req.body);
-    const newEncounter = RandomEncounter(req.body);
-    RandomEncounter.create(newEncounter)
-      .then((encountner) => {
-        console.log('Encounter created');
-        res.json(encountner);
+  updateEncDesc(req, res) {
+    console.log(
+      'Updating description for',
+      req.params.biome,
+      req.params.description
+    );
+    RandomEncounter.findOneAndUpdate(
+      {
+        biome: req.params.biome,
+        'enc.description': req.params.description,
+      },
+      {
+        $set: {
+          // enc alidokumentissa $-merkillä etsitään oikea dokumentti, ja siellä olevan "namen" päälle laitetaan req.body.name
+          'enc.$.description': req.body.description,
+        },
+      }
+    )
+      .then(() => {
+        res.json('Description updated');
       })
-      .catch((error) => {
-        throw error;
+      .catch((err) => {
+        console.error('Error updating description:', err);
+        throw err;
+      });
+  },
+  updateEncWeight(req, res) {
+    console.log('Updating weight for', req.params.biome, req.params.weight);
+    RandomEncounter.findOneAndUpdate(
+      {
+        biome: req.params.weight,
+        'enc.weight': req.params.weight,
+      },
+      {
+        $set: {
+          // enc alidokumentissa $-merkillä etsitään oikea dokumentti, ja siellä olevan "namen" päälle laitetaan req.body.name
+          'enc.$.weight': req.body.weight,
+        },
+      }
+    )
+      .then(() => {
+        res.json('Weight updated');
+      })
+      .catch((err) => {
+        console.error('Error updating weight:', err);
+        throw err;
       });
   },
 
-  // 5) Paivitetaan encounterin id:n perusteella
-  updateById(req, res) {
-    RandomEncounter.findOneAndUpdate({ _id: req.params.id }, req.body, {
-      new: true,
-    })
-      .then((encounters) => {
-        console.log(`Encounter ${req.params.id} updated`);
-        res.json(encounters);
+  updateEncImg(req, res) {
+    console.log('Updating image for', req.params.biome, req.params.img);
+    RandomEncounter.findOneAndUpdate(
+      {
+        biome: req.params.img,
+        'enc.img': req.params.img,
+      },
+      {
+        $set: {
+          // enc alidokumentissa $-merkillä etsitään oikea dokumentti, ja siellä olevan "namen" päälle laitetaan req.body.name
+          'enc.$.img': req.body.img,
+        },
+      }
+    )
+      .then(() => {
+        res.json('Image updated');
       })
-      .catch((error) => {
-        throw error;
+      .catch((err) => {
+        console.error('Error updating image:', err);
+        throw err;
+      });
+  },
+
+  addEnc(req, res) {
+    console.log('Adding encounter', req.body);
+
+    // Create the new encounter object
+    const newEncounter = {
+      name: req.body.name,
+      description: req.body.description,
+      weight: req.body.weight,
+      img: req.body.img,
+    };
+
+    console.log('New encounter object:', newEncounter);
+
+    // Update the RandomEncounter document by pushing to the enc array
+    RandomEncounter.findByIdAndUpdate(
+      req.params.id, // Match the RandomEncounter document by biome's ID from the URL
+      { $push: { enc: newEncounter } }, // Push the new encounter to the enc array
+      { new: true } // Return the updated document
+    )
+      .then((updatedEncounter) => {
+        console.log('Updated encounter:', updatedEncounter);
+        if (!updatedEncounter) {
+          return res.status(404).json({ error: 'Biome not found' });
+        }
+        res.json(updatedEncounter); // Return the updated document with the new encounter
+      })
+      .catch((err) => {
+        console.error('Error adding encounter:', err);
+        res.status(500).json({ error: 'Error adding encounter' });
       });
   },
 };

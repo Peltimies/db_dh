@@ -2,23 +2,43 @@
 
 const express = require('express');
 const router = express.Router();
-const sc = require('../controllers/encountercontroller');
-const authorize = require('../verifytoken');
+const rec = require('../controllers/encountercontroller');
+//const authorize = require('../verifytoken');
 
-//http://localhost:3000/encounters/
-router.get('/', sc.findAll);
+// 1) Kaikkien random encounterien haku
+//http://localhost:3000/randomEncounters/
+router.get('/', rec.findAll);
 
-//http://localhost:3000//encounters/eid/:id
-router.get('/eid/:id', sc.findById);
+// 2) Random Encounterin haku biomen id;n perusteella
+//localhost:3000/randomEncounters/67002a55a7930735f6bac744 (wilderness)
+router.get('/:id', rec.findById);
 
-//http://localhost:3000/encounters/:id
-router.delete('/:id', authorize, sc.deleteById);
+// 3) Biomen haku nimen perusteella
+//localhost:3000/randomEncounters/biome/Highway
+router.get('/biome/:biome', rec.findByBiome);
 
-//http://localhost:3000/encounters/create
-router.post('/create', authorize, sc.create);
+// 4) Random Encounterin poisto id;n perusteella
+//localhost:3000/randomEncounters/6700664595beb8e87ef8d476/
+router.delete('/:id', rec.deleteById);
 
-// 6) Opiskelijan muokkaaminen
-// localhost:3000/encounters/666194b3625665c3a12f9e4d
-router.put('/:id', sc.updateById);
+// 5) Random Encounterin nimen muokkaaminen
+//localhost:3000/randomEncounters/updatename/:biome/:name
+router.put('/updateEncName/:biome/:name', rec.updateEncName);
+
+// 6) Random Encounterin kuvauksen muokkaaminen
+//localhost:3000/randomEncounters/updatename/:biome/:description
+router.put('/updateEncDesc/:biome/:description', rec.updateEncDesc);
+
+// 7) Random Encounterin painoarvon muokkaaminen
+//localhost:3000/randomEncounters/updatename/:biome/:weight
+router.put('/updateEncWeight/:biome/:weight', rec.updateEncWeight);
+
+// 8) Random Encounterin kuvan muokkaaminen
+//localhost:3000/randomEncounters/updateimage/:biome/:image
+router.put('/updateEncImg/:biome/:image', rec.updateEncImg);
+
+// 9) Random Encounterin lisääminen
+//localhost:3000/randomEncounters/addEnc
+router.put('/:id', rec.addEnc);
 
 module.exports = router;
