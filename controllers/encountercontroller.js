@@ -176,11 +176,18 @@ const RandomEncounterController = {
   },
 
   saveEnc(req, res) {
-    console.log('Updating grade for', req.params.id, req.params.name);
+    console.log(
+      'Updating grade for',
+      req.params.id,
+      req.params.name,
+      req.params.description
+    );
+    console.log('Request body:', req.body);
     RandomEncounter.findOneAndUpdate(
       {
         id: req.params.id,
         'enc.name': req.params.name,
+        'enc.description': req.params.description,
       },
       {
         $set: {
@@ -189,14 +196,16 @@ const RandomEncounterController = {
         },
       }
     )
-      .then(() => {
-        res.json('Course updated');
+      .then((updatedDoc) => {
+        console.log('Updated document:', updatedDoc);
+        res.json('Encounter updated');
       })
       .catch((err) => {
-        console.error('Error updating grade:', err);
+        console.error('Error updating encounter:', err);
         throw err;
       });
   },
+
   addEnc(req, res) {
     console.log('Adding encounter', req.body);
 
