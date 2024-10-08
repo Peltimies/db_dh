@@ -186,6 +186,8 @@ const RandomEncounterController = {
         $set: {
           'enc.$.name': req.body.name,
           'enc.$.description': req.body.description,
+          'enc.$.weight': req.body.weight,
+          'enc.$.img': req.body.img,
         },
       }
     )
