@@ -151,6 +151,39 @@ const RandomEncounterController = {
       });
   },
 
+  saveEnc(req, res) {
+    console.log('Saving encounter', req.body);
+
+    const { biomeId } = req.params;
+    const { encounterId } = req.body;
+    RandomEncounter.findOneAndUpdate(
+      {
+        biomeId: biomeId,
+        'enc._id': encounterId,
+      },
+      {
+        $set: {
+          'enc.$.name': req.body.name,
+          'enc.$.description': req.body.description,
+          'enc.$.weight': req.body.weight,
+          'enc.$.img': req.body.img,
+        },
+      },
+      { new: true } // This option returns the updated document
+    )
+      .then((updatedEncounter) => {
+        if (!updatedEncounter) {
+          return res.status(404).json({ message: 'Encounter not found' });
+        }
+        res.json(updatedEncounter); // Send back the updated encounter
+      })
+      .catch((err) => {
+        console.error('Error updating:', err);
+        res
+          .status(500)
+          .json({ message: 'Error updating encounter', error: err });
+      });
+  },
   addEnc(req, res) {
     console.log('Adding encounter', req.body);
 
@@ -184,25 +217,31 @@ const RandomEncounterController = {
   },
 
   deleteEnc(req, res) {
-    console.log('Deleting encounter', req.params.biome, req.params.name);
+    const biomeId = req.params.biomeId; // Get biome ID from URL
+    const encId = req.params.encId; // Get encounter ID from URL
+
+    if (!biomeId || !encId) {
+      return res
+        .status(400)
+        .json({ message: 'Biome ID and Encounter ID are required' });
+    }
+
     RandomEncounter.findOneAndUpdate(
-      {
-        biome: req.params.biome,
-        'enc.name': req.params.name,
-      },
-      {
-        $pull: { enc: { name: req.params.name } },
-      }
+      { _id: biomeId }, // Find the biome by its ID
+      { $pull: { enc: { _id: encId } } }, // Remove the encounter from the biome's "enc" array
+      { new: true } // Return the updated document
     )
-      .then((updatedEncounter) => {
-        if (!updatedEncounter) {
-          return res.status(404).json({ error: 'Encounter not found' });
+      .then((updatedBiome) => {
+        if (!updatedBiome) {
+          return res
+            .status(404)
+            .json({ message: 'Biome or Encounter not found' });
         }
-        res.json(updatedEncounter);
+        res.json({ message: 'Encounter deleted', updatedBiome });
       })
       .catch((err) => {
         console.error('Error deleting encounter:', err);
-        res.status(500).json({ error: 'Error deleting encounter' });
+        res.status(500).json({ error: err.message });
       });
   },
 };

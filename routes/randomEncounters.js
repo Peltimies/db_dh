@@ -11,15 +11,15 @@ router.get('/', rec.findAll);
 
 // 2) Random Encounterin haku biomen id;n perusteella
 //localhost:3000/randomEncounters/67002a55a7930735f6bac744 (wilderness)
-router.get('/:id', rec.findById);
+router.get('/:biomeId', rec.findById);
 
 // 3) Biomen haku nimen perusteella
 //localhost:3000/randomEncounters/biome/Highway
 router.get('/biome/:biome', rec.findByBiome);
 
 // 4) Biomen poisto id;n perusteella
-//localhost:3000/randomEncounters/6700664595beb8e87ef8d476/
-router.delete('/:id', rec.deleteById);
+//localhost:3000/randomEncounters/67002a55a7930735f6bac72e/deleteEnc/67002a55a7930735f6bac72f
+router.delete('/:biomeId/deleteEnc/:encId', rec.deleteEnc);
 
 // 5) Random Encounterin nimen muokkaaminen
 //localhost:3000/randomEncounters/updatename/:biome/:name
@@ -44,5 +44,9 @@ router.put('/:id/addEnc', rec.addEnc);
 // 10) Random Encounterin poisto
 //localhost:3000/randomEncounters/deleteEnc
 router.put('/:id/deleteEnc', rec.deleteEnc);
+
+// 11) Random Encounterin muokkaaminen
+//localhost:3000/randomEncounters/saveEnc
+router.put('/:biomeId', rec.saveEnc);
 
 module.exports = router;
