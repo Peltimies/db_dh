@@ -8,6 +8,7 @@ kun jaamme eri asioita tekevän koodin eri tiedostoihin ja kansioihin.
 */
 
 const RandomEncounter = require('../models/RandomEncounter');
+const mongoose = require('mongoose');
 
 // Tietokannan käsittelymetodit tehdään olion sisään
 // metodin nimi on avain ja sen runko on arvo
@@ -23,17 +24,40 @@ const RandomEncounterController = {
       });
   },
   // 2) Yhden biomen haku id:n perusteella
+  // findById(req, res) {
+  //   //Mongoose-kantaoperaatio tänne
+  //   //findOne-metodin argumenttina on olio, jossa on hakuehto
+  //   //kannassa olevan id:n (_id) on vastattava pyynnön mukana tulevaan id
+  //   RandomEncounter.findOne({ _id: _id })
+  //     // palautuva promise sisältää yhden opiskelijan
+  //     .then((encounters) => {
+  //       res.json(encounters);
+  //     })
+  //     .catch((error) => {
+  //       throw error;
+  //     });
+  // },
+
   findById(req, res) {
-    //Mongoose-kantaoperaatio tänne
-    //findOne-metodin argumenttina on olio, jossa on hakuehto
-    //kannassa olevan id:n (_id) on vastattava pyynnön mukana tulevaan id
-    RandomEncounter.findOne({ _id: req.params.id })
-      // palautuva promise sisältää yhden opiskelijan
-      .then((encounters) => {
-        res.json(encounters);
+    const { biomeId } = req.params;
+
+    // Check if biomeId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(biomeId)) {
+      return res.status(400).json({ error: 'Invalid biome ID' });
+    }
+
+    RandomEncounter.findOne({ _id: biomeId })
+      .then((encounter) => {
+        if (!encounter) {
+          return res.status(404).json({ error: 'Encounter not found' });
+        }
+        res.json(encounter);
       })
       .catch((error) => {
-        throw error;
+        console.error('Error finding encounter:', error);
+        res
+          .status(500)
+          .json({ error: 'Error finding encounter', message: error.message });
       });
   },
 
@@ -152,14 +176,18 @@ const RandomEncounterController = {
   },
 
   saveEnc(req, res) {
-    console.log('Saving encounter', req.body);
-
-    const { biomeId } = req.params;
-    const { encounterId } = req.body;
+    console.log(
+      'Updating grade for',
+      req.params.id,
+      req.params.name,
+      req.params.description
+    );
+    console.log('Request body:', req.body);
     RandomEncounter.findOneAndUpdate(
       {
-        biomeId: biomeId,
-        'enc._id': encounterId,
+        id: req.params.id,
+        'enc.name': req.params.name,
+        'enc.description': req.params.description,
       },
       {
         $set: {
@@ -168,22 +196,18 @@ const RandomEncounterController = {
           'enc.$.weight': req.body.weight,
           'enc.$.img': req.body.img,
         },
-      },
-      { new: true } // This option returns the updated document
+      }
     )
-      .then((updatedEncounter) => {
-        if (!updatedEncounter) {
-          return res.status(404).json({ message: 'Encounter not found' });
-        }
-        res.json(updatedEncounter); // Send back the updated encounter
+      .then((updatedDoc) => {
+        console.log('Updated document:', updatedDoc);
+        res.json('Encounter updated');
       })
       .catch((err) => {
-        console.error('Error updating:', err);
-        res
-          .status(500)
-          .json({ message: 'Error updating encounter', error: err });
+        console.error('Error updating encounter:', err);
+        throw err;
       });
   },
+
   addEnc(req, res) {
     console.log('Adding encounter', req.body);
 
