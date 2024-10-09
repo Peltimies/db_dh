@@ -82,37 +82,39 @@ const RandomEncounterController = {
     res.json('Encounter deleted');
   },
 
-  saveEnc(req, res) {
-    console.log(
-      'Updating grade for',
-      req.params.id,
-      req.params.name,
-      req.params.description
-    );
-    console.log('Request body:', req.body);
-    RandomEncounter.findOneAndUpdate(
-      {
-        id: req.params.id,
-        'enc.name': req.params.name,
-        'enc.description': req.params.description,
-      },
-      {
-        $set: {
-          'enc.$.name': req.body.name,
-          'enc.$.description': req.body.description,
-          'enc.$.weight': req.body.weight,
-          'enc.$.img': req.body.img,
-        },
+  saveEnc: async (req, res) => {
+    try {
+      const { biomeId, encId } = req.params;
+      const { name, description, weight, img } = req.body;
+
+      // Find the document by biomeId
+      const encounterDoc = await RandomEncounter.findById(biomeId);
+      if (!encounterDoc) {
+        return res.status(404).json({ message: 'Biome not found' });
       }
-    )
-      .then((updatedDoc) => {
-        console.log('Updated document:', updatedDoc);
-        res.json('Encounter updated');
-      })
-      .catch((err) => {
-        console.error('Error updating encounter:', err);
-        throw err;
-      });
+
+      // Find the encounter by encId within the enc array
+      const encounter = encounterDoc.enc.id(encId);
+      if (!encounter) {
+        return res.status(404).json({ message: 'Encounter not found' });
+      }
+
+      // Update encounter fields
+      encounter.name = name || encounter.name;
+      encounter.description = description || encounter.description;
+      encounter.weight = weight || encounter.weight;
+      encounter.img = img || encounter.img;
+
+      // Save the updated document
+      await encounterDoc.save();
+
+      return res
+        .status(200)
+        .json({ message: 'Encounter updated successfully', encounter });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Server error' });
+    }
   },
 
   addEnc(req, res) {
