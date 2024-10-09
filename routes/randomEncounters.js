@@ -21,22 +21,6 @@ router.get('/biome/:biome', rec.findByBiome);
 //localhost:3000/randomEncounters/67002a55a7930735f6bac72e/deleteEnc/67002a55a7930735f6bac72f
 router.delete('/:biomeId/deleteEnc/:encId', rec.deleteEnc);
 
-// 5) Random Encounterin nimen muokkaaminen
-//localhost:3000/randomEncounters/updatename/:biome/:name
-router.put('/updateEncName/:biome/:name', rec.updateEncName);
-
-// 6) Random Encounterin kuvauksen muokkaaminen
-//localhost:3000/randomEncounters/updatename/:biome/:description
-router.put('/updateEncDesc/:biome/:description', rec.updateEncDesc);
-
-// 7) Random Encounterin painoarvon muokkaaminen
-//localhost:3000/randomEncounters/updatename/:biome/:weight
-router.put('/updateEncWeight/:biome/:weight', rec.updateEncWeight);
-
-// 8) Random Encounterin kuvan muokkaaminen
-//localhost:3000/randomEncounters/updateimage/:biome/:image
-router.put('/updateEncImg/:biome/:image', rec.updateEncImg);
-
 // 9) Random Encounterin lisääminen
 //localhost:3000/randomEncounters/addEnc
 router.put('/:id/addEnc', rec.addEnc);
