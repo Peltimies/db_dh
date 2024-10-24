@@ -177,6 +177,33 @@ const RandomEncounterController = {
         res.status(500).json({ error: err.message });
       });
   },
+
+  addTable(req, res) {
+    RandomEncounter.insertMany(req.body)
+      .then((docs) => {
+        console.log('Random Encounter table inserted successfully:', docs);
+      })
+      .catch((err) => {
+        console.error('Error inserting encounters:', err);
+      });
+  },
+
+  deleteTable(req, res) {
+    const biomeId = req.params.id; // biomeId from URL params
+    console.log(`Deleting table with ID: ${biomeId}`);
+    RandomEncounter.findOneAndDelete({ _id: biomeId })
+      .then((doc) => {
+        if (!doc) {
+          return res.status(404).json({ message: 'Table not found' });
+        }
+        console.log('Random Encounter table deleted successfully:', doc);
+        res.json({ message: 'Encounter deleted successfully' });
+      })
+      .catch((err) => {
+        console.error('Error deleting encounters:', err);
+        res.status(500).json({ message: 'Internal server error' });
+      });
+  },
 };
 
 module.exports = RandomEncounterController;
