@@ -1,11 +1,11 @@
 // controllers/merchantController.js
-const Item = require('../models/Item');
+const Merchant = require('../models/Merchant');
 //const Item = require('../models/Item');
 
-const ItemController = {
+const MerchantController = {
   // 1) Kaikki encounterit
   findAll(req, res) {
-    Item.find()
+    Merchant.find()
       .then((re) => {
         res.json(re);
       })
@@ -15,4 +15,4 @@ const ItemController = {
   },
 };
 
-module.exports = ItemController;
+module.exports = MerchantController;
