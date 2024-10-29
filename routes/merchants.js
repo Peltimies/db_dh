@@ -3,8 +3,9 @@ const express = require('express');
 const router = express.Router();
 const merchCon = require('../controllers/merchantcontroller');
 
-router.get('/', merchCon.findAll);
+router.get('/', merchCon.getMerchants);
 
-//router.post('/', merchCon.createMerchant);
+//http://localhost:3000/merchants/createMerchant
+router.post('/', merchCon.createMerchant);
 
 module.exports = router;
