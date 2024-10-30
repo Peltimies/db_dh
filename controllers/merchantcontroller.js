@@ -1,6 +1,6 @@
 // controllers/merchantController.js
-const Merchant = require('../models/Merchant');
-const Item = require('../models/Item');
+const { Item, Merchant } = require('../models/Merchant');
+
 //const Item = require('../models/Item');
 
 const MerchantController = {
@@ -17,40 +17,35 @@ const MerchantController = {
 
   async createMerchant(req, res) {
     try {
-      const merchant = await Merchant.create(req.body);
-      await populateMerchantInventory(merchant); // Populate inventory
-      res.status(201).json(merchant);
+      console.log('Request body:', req.body);
+
+      // Aggregaatilla tarkoitetaan tietojen käsittelyä sekä analysointia kokoelmasta käyttäen "agregointiputkea"
+      // Tässä tapauksessa Item kokoelma aggregoituu sample-metodilla, joka valitsee 5 satunnaista riviä
+      const randomItems = await Item.aggregate([{ $sample: { size: 5 } }]);
+
+      console.log('Random items selected:', randomItems);
+
+      // Luodaan kauppias uudella satunnaisesti luodulla inventaariolla
+      const newMerchant = await Merchant.create({
+        name: req.body.name,
+        inventory: randomItems.map((item) => item._id),
+      });
+
+      console.log('New merchant created:', newMerchant);
+      // Käytetään populate-metodia hakeaksemme item kokoelmasta tietoa ja liittää ne merchants kokoelmaan
+      const populatedMerchant = await Merchant.findById(
+        newMerchant._id
+      ).populate('inventory');
+
+      console.log('Populated merchant:', populatedMerchant);
+
+      res.status(201).json(populatedMerchant);
     } catch (error) {
-      console.error('Error creating merchant:', error);
-      res.status(500).send('Internal Server Error');
+      res.status(500).json({
+        error: 'Error creating merchant',
+      });
     }
   },
-};
-
-// Function to populate merchant inventory
-const populateMerchantInventory = (merchant) => {
-  return Item.find({ type: merchant.type }).then((items) => {
-    const randomItems = items
-      .sort(() => 0.5 - Math.random()) // Shuffle items
-      .slice(0, 5); // Limit to 5 items
-
-    const inventory = randomItems.map((item) => ({
-      name: item.name,
-      type: item.type,
-      description: item.description,
-      weight: item.weight,
-      value: item.value,
-      quantity: Math.floor(Math.random() * 5) + 1, // Random quantity 1-5
-      stats: item.stats, // Copy full stats object
-    }));
-
-    // Update the merchant's inventory with detailed item data
-    return Merchant.findOneAndUpdate(
-      { _id: merchant._id },
-      { $set: { inventory } },
-      { new: true }
-    );
-  });
 };
 
 module.exports = MerchantController;

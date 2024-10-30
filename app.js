@@ -16,7 +16,6 @@ require('./dbconnection');
 
 const randomEncounterRouter = require('./routes/randomEncounters');
 const user = require('./routes/users');
-const items = require('./routes/items');
 const merchants = require('./routes/merchants');
 const app = express();
 
@@ -51,7 +50,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/user', user); // users-reitti
 app.use('/randomEncounters', randomEncounterRouter);
 app.use('/merchants', merchants);
-app.use('/items', items);
 app.use(express.json());
 app.use(
   session({
