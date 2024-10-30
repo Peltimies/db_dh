@@ -17,17 +17,26 @@ const MerchantController = {
 
   async createMerchant(req, res) {
     try {
+      const { name, type } = req.body;
       console.log('Request body:', req.body);
+
+      // Alustetaan että typesArray on aina taulukko riippumatta siitä, onko type alunperin annettu taulukkona vai yksittäisenä arvona
+      // Jos type on taulukko muodossa esim: ["Armor, "Weapon"], se sijoitetaan suoraan typesArray -muuttujaan. Jos taas type on yksittäinen arvo,
+      // se kääritään taulukoksi [type], jotta sen käsittely on helpompaaa
+      const typesArray = Array.isArray(type) ? type : [type];
 
       // Aggregaatilla tarkoitetaan tietojen käsittelyä sekä analysointia kokoelmasta käyttäen "agregointiputkea"
       // Tässä tapauksessa Item kokoelma aggregoituu sample-metodilla, joka valitsee 5 satunnaista riviä
-      const randomItems = await Item.aggregate([{ $sample: { size: 5 } }]);
+      const randomItems = await Item.aggregate([
+        { $match: { type: { $in: typesArray } } },
+        { $sample: { size: 10 } },
+      ]);
 
       console.log('Random items selected:', randomItems);
 
       // Luodaan kauppias uudella satunnaisesti luodulla inventaariolla
       const newMerchant = await Merchant.create({
-        name: req.body.name,
+        name,
         inventory: randomItems.map((item) => item._id),
       });
 
