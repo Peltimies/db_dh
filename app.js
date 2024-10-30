@@ -16,7 +16,7 @@ require('./dbconnection');
 
 const randomEncounterRouter = require('./routes/randomEncounters');
 const user = require('./routes/users');
-
+const merchants = require('./routes/merchants');
 const app = express();
 
 // view engine setup
@@ -49,6 +49,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/user', user); // users-reitti
 app.use('/randomEncounters', randomEncounterRouter);
+app.use('/merchants', merchants);
 app.use(express.json());
 app.use(
   session({

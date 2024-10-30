@@ -32,6 +32,13 @@ router.put('/:id/deleteEnc', rec.deleteEnc);
 // 11) Random Encounterin muokkaaminen
 //localhost:3000/randomEncounters/saveEnc
 // localhost:3000/randomEncounters/67002a55a7930735f6bac737/saveEnc/67002a55a7930735f6bac73a
-router.put('/saveEnc/:biomeId/:name', rec.saveEnc);
+router.put('/saveEnc/:biomeId/:encId', rec.saveEnc);
 
+// 12) Random Encounter taulukon lisäys
+//localhost:3000/randomEncounters/addTable
+router.post('/addTable', rec.addTable);
+
+// 13) Random Encounter taulukon poisto
+//localhost:3000/randomEncounters/id/deleteTable
+router.delete('/:id/deleteTable', rec.deleteTable);
 module.exports = router;
