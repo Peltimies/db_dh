@@ -5,7 +5,7 @@ const merchCon = require('../controllers/merchantcontroller');
 
 router.get('/', merchCon.getMerchants);
 
-//http://localhost:3000/merchants/createMerchant
+//http://localhost:3000/merchants/create
 router.post('/create', merchCon.createMerchant);
 
 module.exports = router;
