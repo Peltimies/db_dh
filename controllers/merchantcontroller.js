@@ -28,7 +28,7 @@ const MerchantController = {
       const typesArray = Array.isArray(type) ? type : [type];
 
       // Aggregaatilla tarkoitetaan tietojen käsittelyä sekä analysointia kokoelmasta käyttäen "agregointiputkea"
-      // Tässä tapauksessa Item kokoelma aggregoituu sample-metodilla, joka valitsee 5 satunnaista riviä
+      // Tässä tapauksessa Item kokoelma aggregoituu sample-metodilla, joka valitsee 10 satunnaista riviä
       const randomItems = await Item.aggregate([
         { $match: { type: { $in: typesArray } } },
         { $sample: { size: 10 } },
@@ -43,7 +43,7 @@ const MerchantController = {
       });
 
       console.log('New merchant created:', newMerchant);
-      // Käytetään populate-metodia hakeaksemme item kokoelmasta tietoa ja liittää ne merchants kokoelmaan
+      // Käytetään populate-metodia hakeaksemme item -kokoelmasta tietoa ja liittää ne merchants kokoelmaan
       const populatedMerchant = await Merchant.findById(
         newMerchant._id
       ).populate('inventory');
@@ -56,6 +56,25 @@ const MerchantController = {
         error: 'Error creating merchant',
       });
     }
+  },
+
+  // Kauppiaanpoisto metodi, tämä metodi hakee kauppiaan id:n perusteella ja poistaa sen
+  deleteMerchant(req, res) {
+    // Logataan poistettavan kauppiaan id
+    console.log('Deleting merchant with id:', req.params.id);
+    // Mongoose metodi findByIdAndDelete = haetaan kauppias id:n perusteella
+    Merchant.findByIdAndDelete(req.params.id)
+      .then((merchant) => {
+        if (!merchant) {
+          return res.status(404).json({ message: 'Merchant not found' });
+        }
+        console.log('Merchant deleted successfully:', merchant);
+        res.json({ message: 'Merchant deleted successfully' });
+      })
+      .catch((err) => {
+        console.error('Error deleting merchant:', err);
+        res.status(500).json({ message: 'Internal server error' });
+      });
   },
 };
 
