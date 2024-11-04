@@ -15,6 +15,9 @@ const itemSchema = new mongoose.Schema({
   cost: Number,
   weight: Number,
   quantity: Number,
+  dmg: String,
+  rng: Number,
+  description: String,
 });
 
 const Item = mongoose.model('Item', itemSchema);
