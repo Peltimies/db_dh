@@ -10,11 +10,14 @@ module.exports = mongoose.model('Merchant', merchantSchema);
 
 const itemSchema = new mongoose.Schema({
   seller: { type: mongoose.Schema.Types.ObjectId, ref: 'Merchant' },
-  ware: String,
-  type: String,
-  cost: Number,
-  weight: Number,
-  quantity: Number,
+  ware: { type: String },
+  type: { type: String, required: true },
+  cost: { type: Number, required: true },
+  weight: { type: Number, required: true },
+  quantity: { type: Number, required: true },
+  dmg: { type: String, required: false },
+  rng: { type: String, required: false },
+  ac: { type: String, required: false },
 });
 
 const Item = mongoose.model('Item', itemSchema);
