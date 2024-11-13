@@ -15,30 +15,25 @@ const randomEncounters = [
       {
         name: 'Highwaymen',
         description:
-          'The party gets waylaid by a group of 2d4 Bandits. They utter: "My men would like a word about your belongings!" as they draw their blades.',
+          'The party gets waylaid by a group of Bandits. They utter: "My men would like a word about your belongings!" as they draw their blades.',
         weight: 1,
-        img: 'assets/ettercap.png',
-      },
-      {
-        name: 'Niko',
-        description:
-          'Niko teleports behind the party and attempts to whip one of the players with an extension cord.',
-        weight: 8,
-        img: 'assets/ettercap.png',
+        roll: '2d4',
+        img: 'assets/thief.png',
       },
       {
         name: 'Travelling Merchant',
         description:
           'A lone merchant, heavily laden with goods, is making their way down the highway. They may offer to trade or sell goods to the party.',
         weight: 3,
-        img: 'assets/ettercap.png',
+        img: 'assets/merchant.png',
       },
       {
         name: 'Group of Pilgrims',
         description:
           'A group of devout pilgrims, traveling to a nearby holy site, are seeking donations or food from the party.',
         weight: 1,
-        img: 'assets/ettercap.png',
+        roll: '2d6',
+        img: 'assets/pilgrims.png',
       },
       {
         name: 'Wanted Poster',
@@ -52,21 +47,21 @@ const randomEncounters = [
         description:
           'A rickety cart, abandoned by its owner, contains a few scattered goods and a cryptic note hinting at a local mystery',
         weight: 10,
-        img: 'assets/ettercap.png',
+        img: 'assets/cart.png',
       },
       {
         name: 'Mysterious Stranger',
         description:
           'A hooded figure, dressed in dark clothing, is watching the party from a distance.',
         weight: 1,
-        img: 'assets/ettercap.png',
+        img: 'assets/mysterious.png',
       },
       {
         name: 'Roadside Shrine',
         description:
           'A small, old shrine dedicated to a deity stands on the side of the road.',
         weight: 1,
-        img: 'assets/ettercap.png',
+        img: 'assets/shrine.png',
       },
     ],
   },

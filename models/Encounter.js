@@ -2,10 +2,9 @@ const mongoose = require('mongoose');
 const EncounterSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
-  description2: { type: String },
-  roll: { type: String },
+  roll: { type: String, required: false },
   weight: { type: Number, required: true },
-  img: { type: String },
+  img: { type: String, required: false },
 });
 
 module.exports = EncounterSchema;
