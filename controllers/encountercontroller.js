@@ -118,6 +118,7 @@ const RandomEncounterController = {
       name: req.body.name,
       description: req.body.description,
       weight: req.body.weight,
+      roll: req.body.roll,
       img: req.body.img,
     };
 
