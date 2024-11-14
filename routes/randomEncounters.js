@@ -42,7 +42,3 @@ router.post('/addTable', rec.addTable);
 //localhost:3000/randomEncounters/id/deleteTable
 router.delete('/:id/deleteTable', rec.deleteTable);
 module.exports = router;
-
-// 14) Kaikkien Random Encountereiden tallennus
-//localhost:3000/randomEncounters/allSave
-router.put('/allSave/:biomeId', rec.allSave);
