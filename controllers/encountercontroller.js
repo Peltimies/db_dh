@@ -83,24 +83,19 @@ const RandomEncounterController = {
   },
 
   saveEnc(req, res) {
-    console.log(
-      'Updating grade for',
-      req.params.id,
-      req.params.name,
-      req.params.description
-    );
+    console.log('Updating information for', req.params.biomeId);
     console.log('Request body:', req.body);
     RandomEncounter.findOneAndUpdate(
       {
-        id: req.params.id,
-        'enc.name': req.params.name,
-        'enc.description': req.params.description,
+        _id: req.params.biomeId,
+        'enc.name': req.body.name,
       },
       {
         $set: {
           'enc.$.name': req.body.name,
           'enc.$.description': req.body.description,
           'enc.$.weight': req.body.weight,
+          'enc.$.roll': req.body.roll,
           'enc.$.img': req.body.img,
         },
       }
