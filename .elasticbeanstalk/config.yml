@@ -1,0 +1,5 @@
+branch-defaults:
+  main:
+    environment: DungeonHelperNew
+global:
+  profile: eb-cli

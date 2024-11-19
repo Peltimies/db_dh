@@ -19,6 +19,8 @@ const user = require('./routes/users');
 const merchants = require('./routes/merchants');
 const app = express();
 
+const PORT = process.env.PORT || 3000;
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -34,7 +36,9 @@ const corsOptions = {
 // corsin käyttöönotto
 app.use(cors(corsOptions));
 
-/**************Miidlewaren käyttöönottoa *****************/
+app.use(express.static(path.join(__dirname, 'views/dist')));
+
+/************** Middlewarejen käyttöönotto *****************/
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
@@ -79,13 +83,6 @@ app.post('/submit', (req, res) => {
 });
 
 // catch 404 and forward to error handler
-//app.use(function (req, res, next) {
-// const err = new Error('Not Found');
-//err.status = 404;
-//next(err);
-//});
-
-// Handle 404 errors
 app.use((req, res, next) => {
   res.status(404).json({ error: 'Not Found' });
 });
@@ -99,6 +96,11 @@ app.use(function (err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+// Kuunnellaan porttia, kun kaikki on määritetty
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 module.exports = app;

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www",
+    "start": "node app.js",
     "test": "mocha"
   },
   "dependencies": {
@@ -33,7 +33,7 @@
     "mocha": "^10.2.0",
     "nodemon": "^3.1.3"
   },
-  "main": "add.js",
+  "main": "app.js",
   "directories": {
     "test": "test"
   },
