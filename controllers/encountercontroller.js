@@ -24,6 +24,20 @@ const RandomEncounterController = {
       });
   },
   // 2) Yhden biomen haku id:n perusteella
+  // findById(req, res) {
+  //   //Mongoose-kantaoperaatio tänne
+  //   //findOne-metodin argumenttina on olio, jossa on hakuehto
+  //   //kannassa olevan id:n (_id) on vastattava pyynnön mukana tulevaan id
+  //   RandomEncounter.findOne({ _id: _id })
+  //     // palautuva promise sisältää yhden opiskelijan
+  //     .then((encounters) => {
+  //       res.json(encounters);
+  //     })
+  //     .catch((error) => {
+  //       throw error;
+  //     });
+  // },
+
   findById(req, res) {
     const { biomeId } = req.params;
 
@@ -68,39 +82,34 @@ const RandomEncounterController = {
     res.json('Encounter deleted');
   },
 
-  saveEnc: async (req, res) => {
-    try {
-      const { biomeId, encId } = req.params;
-      const { name, description, weight, img } = req.body;
+  saveEnc(req, res) {
+    const biomeId = req.params.biomeId; // biomeId from URL params
+    const encId = req.params.encId; // encounterId from URL params
+    console.log(
+      `Saving encounter with ID: ${encId} to biome with ID: ${biomeId}`
+    );
 
-      // Find the document by biomeId
-      const encounterDoc = await RandomEncounter.findById(biomeId);
-      if (!encounterDoc) {
-        return res.status(404).json({ message: 'Biome not found' });
-      }
-
-      // Find the encounter by encId within the enc array
-      const encounter = encounterDoc.enc.id(encId);
-      if (!encounter) {
-        return res.status(404).json({ message: 'Encounter not found' });
-      }
-
-      // Update encounter fields
-      encounter.name = name || encounter.name;
-      encounter.description = description || encounter.description;
-      encounter.weight = weight || encounter.weight;
-      encounter.img = img || encounter.img;
-
-      // Save the updated document
-      await encounterDoc.save();
-
+    if (!biomeId || !encId) {
       return res
-        .status(200)
-        .json({ message: 'Encounter updated successfully', encounter });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ message: 'Server error' });
+        .status(400)
+        .json({ message: 'Biome ID and Encounter ID are required' });
     }
+
+    RandomEncounter.findOneAndUpdate(
+      { _id: biomeId, 'enc._id': encId },
+      { $set: { 'enc.$': req.body } },
+      { new: true }
+    )
+      .then((updatedEncounter) => {
+        if (!updatedEncounter) {
+          return res.status(404).json({ error: 'Biome not found' });
+        }
+        res.json(updatedEncounter);
+      })
+      .catch((err) => {
+        console.error('Error saving encounter:', err);
+        res.status(500).json({ error: 'Error saving encounter' });
+      });
   },
 
   addEnc(req, res) {
@@ -111,6 +120,7 @@ const RandomEncounterController = {
       name: req.body.name,
       description: req.body.description,
       weight: req.body.weight,
+      roll: req.body.roll,
       img: req.body.img,
     };
 
@@ -193,12 +203,3 @@ const RandomEncounterController = {
 };
 
 module.exports = RandomEncounterController;
-
-/*
-students.js -reittitiedostossa kontrollerin metodia kutsutaan tällä tavalla:
-
-router.get('/', StudentController.findAll);
-
-jolloin kaikki opiskelijat saadaan JSON-muodossa osoitteesta http://localhost:3000/students/
-
-*/

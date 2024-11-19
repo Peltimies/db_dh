@@ -6,10 +6,10 @@ const EncounterSchema = require('./Encounter');
 const RandomEncounterSchema = new mongoose.Schema({
   biome: {
     type: String,
-    require: true,
+    required: true,
     unique: true,
   },
-  img: { type: String, require: false },
+  img: { type: String, required: false },
   enc: { type: [EncounterSchema], required: true },
 });
 
