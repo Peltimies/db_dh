@@ -68,41 +68,94 @@ const RandomEncounterController = {
     res.json('Encounter deleted');
   },
 
-  async saveEnc(req, res, encId) {
+  async saveEnc(req, res) {
     try {
-      const biomeId = req.params.id; // Get biome ID from URL params
-      const encounterId = req.headers['x-encounter-id']; // Get encounter ID from headers
-      console.log('Saving encounter:', encounterId, 'in biome:', biomeId);
+      const biomeId = req.params.id;
+      const encounterId = req.headers['x-encounter-id'];
+      console.log('Saving encounter - Debug Info:', {
+        biomeId,
+        encounterId,
+        body: req.body,
+        headers: req.headers
+      });
+
+      // Find the biome first to check if it exists
+      const biome = await RandomEncounter.findById(biomeId);
+      if (!biome) {
+        console.log('Biome not found:', biomeId);
+        return res.status(404).json({ message: 'Biome not found' });
+      }
+
+      console.log('Found biome:', {
+        id: biome._id,
+        name: biome.biome,
+        encounterCount: biome.enc.length
+      });
+
+      // Convert IDs to ObjectId
+      const biomeObjectId = mongoose.Types.ObjectId(biomeId);
+      const encounterObjectId = mongoose.Types.ObjectId(encounterId);
+
+      console.log('Using ObjectIds:', {
+        biomeObjectId: biomeObjectId.toString(),
+        encounterObjectId: encounterObjectId.toString()
+      });
 
       // Find the biome and update the specific encounter within its enc array
       const result = await RandomEncounter.findOneAndUpdate(
         {
-          _id: biomeId,
-          'enc._id': encounterId
+          _id: biomeObjectId,
+          'enc._id': encounterObjectId
         },
         {
           $set: {
             'enc.$.name': req.body.name,
             'enc.$.description': req.body.description,
             'enc.$.weight': req.body.weight,
-            'enc.$.roll': req.body.roll,
+            'enc.$.roll': req.body.roll || '', // Provide default empty string
             'enc.$.img': req.body.img
           }
         },
-        { new: true } // Return the updated document
+        {
+          new: true,
+          runValidators: true
+        }
       );
 
       if (!result) {
+        console.log('Update failed - no matching document found');
+        // Try to find the biome to see what encounters it has
+        const currentBiome = await RandomEncounter.findById(biomeObjectId);
+        if (currentBiome) {
+          console.log('Current encounters in biome:',
+            currentBiome.enc.map((e) => ({
+              id: e._id.toString(),
+              name: e.name
+            }))
+          );
+        }
         return res.status(404).json({ message: 'Biome or Encounter not found' });
       }
 
       // Find the updated encounter in the result
-      const updatedEncounter = result.enc.find((e) => e._id.toString() === encounterId);
-      // Return the updated encounter
+      const updatedEncounter = result.enc.find(
+        (e) => e._id.toString() === encounterObjectId.toString()
+      );
+
+      if (!updatedEncounter) {
+        console.log('Updated encounter not found in result');
+        return res.status(404).json({ message: 'Updated encounter not found' });
+      }
+
+      console.log('Successfully updated encounter:', updatedEncounter);
       res.json(updatedEncounter);
     } catch (error) {
       console.error('Error saving encounter:', error);
-      res.status(500).json({ error: 'Error saving encounter', message: error.message });
+      res.status(500).json({
+        error: 'Error saving encounter',
+        message: error.message,
+        details: error.errors
+      });
     }
   },
 
