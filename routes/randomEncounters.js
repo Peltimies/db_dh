@@ -30,8 +30,8 @@ router.put('/:id/addEnc', rec.addEnc);
 router.put('/:id/deleteEnc', rec.deleteEnc);
 
 // 11) Random Encounterin muokkaaminen
-//localhost:3000/randomEncounters/:id/saveEnc
-router.put('/:id/saveEnc', rec.saveEnc);
+//localhost:3000/randomEncounters/saveEnc/:biomeId/:encId
+router.patch('/saveEnc/:biomeId/:encId', rec.saveEnc);
 
 // 12) Random Encounter taulukon lisäys
 //localhost:3000/randomEncounters/addTable
