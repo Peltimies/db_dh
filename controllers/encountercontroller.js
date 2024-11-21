@@ -81,7 +81,7 @@ const RandomEncounterController = {
         return res.status(400).json({ message: 'Invalid biome ID or encounter ID' });
       }
 
-      // Strip out non-schema fields
+      // Strip out non-schema fields and validate required fields
       const encounterData = {
         name: req.body.name,
         description: req.body.description,
@@ -90,7 +90,26 @@ const RandomEncounterController = {
         img: req.body.img || ''
       };
 
-      console.log('Cleaned encounter data:', encounterData);
+      // Validate required fields
+      if (!encounterData.name || !encounterData.description || typeof encounterData.weight !== 'number') {
+        console.error('Missing or invalid required fields:', encounterData);
+        return res.status(400).json({
+          message: 'Missing or invalid required fields',
+          details: {
+            name: !encounterData.name ? 'Name is required' : null,
+            description: !encounterData.description ? 'Description is required' : null,
+            weight: typeof encounterData.weight !== 'number' ? 'Weight must be a number' : null
+          }
+        });
+      }
+
+      // Validate weight range
+      if (encounterData.weight < 0 || encounterData.weight > 100) {
+        console.error('Weight out of range:', encounterData.weight);
+        return res.status(400).json({ message: 'Weight must be between 0 and 100' });
+      }
+
+      console.log('Validated encounter data:', encounterData);
 
       try {
         // First, find the biome and the specific encounter
@@ -112,34 +131,39 @@ const RandomEncounterController = {
         }
 
         // Update the encounter data while preserving _id
+        const originalId = biome.enc[encounterIndex]._id;
         biome.enc[encounterIndex] = {
           ...encounterData,
-          _id: biome.enc[encounterIndex]._id // Preserve the original _id
+          _id: originalId
         };
 
         // Save the entire biome document
-        const savedBiome = await biome.save();
+        try {
+          const savedBiome = await biome.save();
+          const updatedEncounter = savedBiome.enc[encounterIndex];
+          console.log('Successfully updated encounter:', updatedEncounter);
+          return res.json(updatedEncounter);
+        } catch (saveError) {
+          console.error('Error saving biome:', saveError);
+          return res.status(500).json({
+            message: 'Error saving encounter',
+            error: saveError.message,
+            details: saveError.errors
+          });
+        }
 
-        // Get the updated encounter
-        const updatedEncounter = savedBiome.enc[encounterIndex];
-
-        console.log('Successfully updated encounter:', updatedEncounter);
-        return res.json(updatedEncounter);
-
-      } catch (error) {
-        console.error('Database operation failed:', error);
+      } catch (dbError) {
+        console.error('Database operation failed:', dbError);
         return res.status(500).json({
           message: 'Database operation failed',
-          error: error.message,
-          stack: error.stack
+          error: dbError.message
         });
       }
     } catch (error) {
       console.error('Unexpected error in saveEnc:', error);
       return res.status(500).json({
         message: 'Internal server error',
-        error: error.message,
-        stack: error.stack
+        error: error.message
       });
     }
   },
