@@ -73,10 +73,11 @@ const RandomEncounterController = {
     try {
       const updatedEncounter = await RandomEncounter.findOneAndUpdate(
         {
-          _id: req.params.biomeId, // Find the biome document
-          'enc._id': req.params.encId // Find the specific encounter in the enc array
+          _id: req.params.biomeId, // Löytää Biomen ID:n perusteella
+          'enc._id': req.params.encId // Löytää Encounterin ID:n perusteella
         },
         {
+          // Asettaa muutokset encounterille
           $set: {
             'enc.$.name': req.body.name,
             'enc.$.description': req.body.description,
