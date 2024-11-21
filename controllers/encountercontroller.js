@@ -23,20 +23,6 @@ const RandomEncounterController = {
         throw error;
       });
   },
-  // 2) Yhden biomen haku id:n perusteella
-  // findById(req, res) {
-  //   //Mongoose-kantaoperaatio tänne
-  //   //findOne-metodin argumenttina on olio, jossa on hakuehto
-  //   //kannassa olevan id:n (_id) on vastattava pyynnön mukana tulevaan id
-  //   RandomEncounter.findOne({ _id: _id })
-  //     // palautuva promise sisältää yhden opiskelijan
-  //     .then((encounters) => {
-  //       res.json(encounters);
-  //     })
-  //     .catch((error) => {
-  //       throw error;
-  //     });
-  // },
 
   findById(req, res) {
     const { biomeId } = req.params;
@@ -146,7 +132,6 @@ const RandomEncounterController = {
         res.status(500).json({ error: 'Error adding encounter' });
       });
   },
-
   deleteEnc(req, res) {
     const biomeId = req.params.biomeId; // Get biome ID from URL
     const encId = req.params.encId; // Get encounter ID from URL
@@ -175,7 +160,6 @@ const RandomEncounterController = {
         res.status(500).json({ error: err.message });
       });
   },
-
   addTable(req, res) {
     RandomEncounter.insertMany(req.body)
       .then((docs) => {
@@ -185,7 +169,6 @@ const RandomEncounterController = {
         console.error('Error inserting encounters:', err);
       });
   },
-
   deleteTable(req, res) {
     const biomeId = req.params.id; // biomeId from URL params
     console.log(`Deleting table with ID: ${biomeId}`);
