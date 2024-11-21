@@ -38,7 +38,7 @@ const randomEncounters = [
       {
         name: 'Wanted Poster',
         description:
-          'A posted notice on a nearby tree or milestone announces a reward for the capture of a notorious outlaw, who may be hiding in the nearby area. ',
+          'A posted notice on a nearby tree or milestone announces a reward for the capture of a notorious outlaw, who may be hiding in the nearby area.',
         weight: 1,
         img: 'assets/ettercap.png',
       },
