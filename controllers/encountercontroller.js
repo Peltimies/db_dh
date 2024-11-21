@@ -74,18 +74,19 @@ const RandomEncounterController = {
     console.log('Request body:', req.body);
 
     try {
+      // Etsii biomen ID;n perusteella
       const biome = await RandomEncounter.findById(req.params.biomeId);
       if (!biome) {
         console.log('Biome not found');
         return res.status(404).json({ error: 'Biome not found' });
       }
 
-      // First try to find by ID, then by name
+      // Etsii kohtaamisen ensin ID;llä
       let encounterIndex = biome.enc.findIndex(
         (e) => e._id.toString() === req.params.encId
       );
 
-      // If not found by ID, try to find by name
+      // ...jos sitä ei löydy sitten nimellä
       if (encounterIndex === -1 && req.body.name) {
         encounterIndex = biome.enc.findIndex((e) => e.name === req.body.name);
       }
@@ -95,10 +96,10 @@ const RandomEncounterController = {
         return res.status(404).json({ error: 'Encounter not found' });
       }
 
-      // Keep the original ID when updating
+      // Pitää alkuperäisen IDn päivättäessä
       const originalId = biome.enc[encounterIndex]._id;
 
-      // Update the encounter
+      // Päivittää kohtaamisen
       biome.enc[encounterIndex] = {
         _id: originalId, // Preserve the original ID
         name: req.body.name,
