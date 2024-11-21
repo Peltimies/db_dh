@@ -69,12 +69,12 @@ const RandomEncounterController = {
   },
 
   async saveEnc(req, res) {
-    console.log('Updating encounter for biome:', req.params.id);
+    console.log('Updating encounter for biome:', req.params.biomeId);
     try {
       const updatedEncounter = await RandomEncounter.findOneAndUpdate(
         {
           _id: req.params.biomeId, // Find the biome document
-          'enc._id': req.body.encId // Find the specific encounter in the enc array
+          'enc._id': req.params.encId // Find the specific encounter in the enc array
         },
         {
           $set: {
