@@ -82,34 +82,36 @@ const RandomEncounterController = {
     res.json('Encounter deleted');
   },
 
-  saveEnc(req, res) {
-    const biomeId = req.params.biomeId; // biomeId from URL params
-    const encId = req.params.encId; // encounterId from URL params
-    console.log(
-      `Saving encounter with ID: ${encId} to biome with ID: ${biomeId}`
-    );
+  async saveEnc(req, res) {
+    console.log('Updating encounter for biome:', req.params.id);
+    try {
+      const updatedEncounter = await RandomEncounter.findOneAndUpdate(
+        {
+          _id: req.params.biomeId, // Find the biome document
+          'enc._id': req.body.encId // Find the specific encounter in the enc array
+        },
+        {
+          $set: {
+            'enc.$.name': req.body.name,
+            'enc.$.description': req.body.description,
+            'enc.$.weight': req.body.weight,
+            'enc.$.roll': req.body.roll,
+            'enc.$.img': req.body.img
+          }
+        },
+        { new: true }
+      );
 
-    if (!biomeId || !encId) {
-      return res
-        .status(400)
-        .json({ message: 'Biome ID and Encounter ID are required' });
+      if (!updatedEncounter) {
+        return res.status(404).json({ error: 'Encounter not found' });
+      }
+
+      res.json(updatedEncounter);
+    } catch (error) {
+      console.error('Error updating encounter:', error);
+      res.status(500).json({ error: 'Error updating encounter' });
     }
 
-    RandomEncounter.findOneAndUpdate(
-      { _id: biomeId, 'enc._id': encId },
-      { $set: { 'enc.$': req.body } },
-      { new: true }
-    )
-      .then((updatedEncounter) => {
-        if (!updatedEncounter) {
-          return res.status(404).json({ error: 'Biome not found' });
-        }
-        res.json(updatedEncounter);
-      })
-      .catch((err) => {
-        console.error('Error saving encounter:', err);
-        res.status(500).json({ error: 'Error saving encounter' });
-      });
   },
 
   addEnc(req, res) {
