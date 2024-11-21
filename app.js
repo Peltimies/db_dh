@@ -27,8 +27,9 @@ app.set('view engine', 'ejs');
 // Siihen saadaan yhteys corsin ansiosta
 // backendi ei voi olla kenenkään muun kaveri kuin tässä määritetyn osoitteen
 const corsOptions = {
-  origin: 'http://localhost:4200',
+  origin: ['http://localhost:4200', 'http://localhost:8080'],
   optionsSuccessStatus: 200,
+  credentials: true
 };
 
 // corsin käyttöönotto
