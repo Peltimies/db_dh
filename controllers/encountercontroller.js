@@ -72,37 +72,48 @@ const RandomEncounterController = {
     console.log('Updating encounter for biome:', req.params.biomeId);
     console.log('Encounter ID:', req.params.encId);
     console.log('Request body:', req.body);
-    try {
-      const updatedEncounter = await RandomEncounter.findOneAndUpdate(
-        {
-          _id: req.params.biomeId, // Löytää Biomen ID:n perusteella
-          'enc._id': req.params.encId // Löytää Encounterin ID:n perusteella
-        },
-        {
-          // Asettaa muutokset encounterille
-          $set: {
-            'enc.$.name': req.body.name,
-            'enc.$.description': req.body.description,
-            'enc.$.weight': req.body.weight,
-            'enc.$.roll': req.body.roll,
-            'enc.$.img': req.body.img
-          }
-        },
-        { new: true }
-      );
 
-      if (!updatedEncounter) {
+    try {
+      const biome = await RandomEncounter.findById(req.params.biomeId);
+      if (!biome) {
+        console.log('Biome not found');
+        return res.status(404).json({ error: 'Biome not found' });
+      }
+
+      // First try to find by ID, then by name
+      let encounterIndex = biome.enc.findIndex((e) => e._id.toString() === req.params.encId);
+
+      // If not found by ID, try to find by name
+      if (encounterIndex === -1 && req.body.name) {
+        encounterIndex = biome.enc.findIndex((e) => e.name === req.body.name);
+      }
+
+      if (encounterIndex === -1) {
+        console.log('Update failed - encounter not found');
         return res.status(404).json({ error: 'Encounter not found' });
       }
 
-      res.json(updatedEncounter);
+      // Keep the original ID when updating
+      const originalId = biome.enc[encounterIndex]._id;
+
+      // Update the encounter
+      biome.enc[encounterIndex] = {
+        _id: originalId, // Preserve the original ID
+        name: req.body.name,
+        description: req.body.description,
+        weight: req.body.weight,
+        roll: req.body.roll,
+        img: req.body.img
+      };
+
+      const savedBiome = await biome.save();
+      console.log('Update successful');
+      res.json(savedBiome);
     } catch (error) {
       console.error('Error updating encounter:', error);
       res.status(500).json({ error: 'Error updating encounter' });
     }
-
   },
-
   addEnc(req, res) {
     console.log('Adding encounter', req.body);
 
