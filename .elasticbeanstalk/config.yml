@@ -3,9 +3,9 @@ branch-defaults:
     environment: DUNGEONHELPER-env
     group_suffix: null
 global:
-  application_name: db_dh
+  application_name: dungeonhelper
   branch: null
-  default_ec2_keyname: dungeon_30102024
+  default_ec2_keyname: aws-eb
   default_platform: Node.js 20 running on 64bit Amazon Linux 2023
   default_region: eu-north-1
   include_git_submodules: true

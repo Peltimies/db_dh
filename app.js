@@ -29,14 +29,16 @@ app.set('view engine', 'ejs');
 // Siihen saadaan yhteys corsin ansiosta
 // backendi ei voi olla kenenkään muun kaveri kuin tässä määritetyn osoitteen
 const corsOptions = {
-  origin: 'http://localhost:4200',
+  origin: [
+    'http://Dunkku.eu-north-1.elasticbeanstalk.com'
+  ],
   optionsSuccessStatus: 200,
 };
 
 // corsin käyttöönotto
 app.use(cors(corsOptions));
 
-app.use(express.static(path.join(__dirname, 'views/dist')));
+
 
 /************** Middlewarejen käyttöönotto *****************/
 // uncomment after placing your favicon in /public
@@ -96,6 +98,14 @@ app.use(function (err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+app.use(express.static(path.join(__dirname, '/dist/browser/index.html' )));
+
+app.get('*', (req, res) => {
+  res.sendFile(
+    path.join(__dirname, '/dist/browser/', 'index.html')
+  );
 });
 
 // Kuunnellaan porttia, kun kaikki on määritetty
