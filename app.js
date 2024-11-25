@@ -48,7 +48,7 @@ app.use(
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/user', user); // users-reitti
+app.use('/users', user); // users-reitti
 app.use('/randomEncounters', randomEncounterRouter);
 app.use('/merchants', merchants);
 app.use(express.json());
