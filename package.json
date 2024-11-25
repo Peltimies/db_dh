@@ -7,6 +7,9 @@
     "test": "mocha"
   },
   "dependencies": {
+    "@aws-amplify/auth": "^6.7.0",
+    "@aws-amplify/ui-angular": "^5.0.32",
+    "amazon-cognito-identity-js": "^6.3.12",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "~1.4.6",
     "cors": "^2.8.5",
