@@ -10,6 +10,7 @@ const authorize = require('../verifytoken');
 router.get('/', rec.findAll);
 
 // 2) Random Encounterin haku biomen id;n perusteella
+// kaksoispiste = dynaaminen reitti
 //localhost:3000/randomEncounters/67002a55a7930735f6bac744 (wilderness)
 router.get('/:biomeId', rec.findById);
 
@@ -23,6 +24,7 @@ router.delete('/:biomeId/deleteEnc/:encId', authorize, rec.deleteEnc);
 
 // 9) Random Encounterin lisääminen
 //localhost:3000/randomEncounters/addEnc
+// put = vanhan tiedon päälle uusi tieto
 router.put('/:id/addEnc', authorize, rec.addEnc);
 
 // 10) Random Encounterin poisto
@@ -36,6 +38,7 @@ router.put('/:biomeId/saveEnc/:encId', authorize, rec.saveEnc);
 
 // 12) Random Encounter taulukon lisäys
 //localhost:3000/randomEncounters/addTable
+// post = täysin uusi tieto
 router.post('/addTable', authorize, rec.addTable);
 
 // 13) Random Encounter taulukon poisto
