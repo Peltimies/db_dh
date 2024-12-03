@@ -30,7 +30,9 @@ app.set('view engine', 'ejs');
 // backendi ei voi olla kenenkään muun kaveri kuin tässä määritetyn osoitteen
 const corsOptions = {
   origin: [
-    'http://Dunkku.eu-north-1.elasticbeanstalk.com'
+    'http://dunkku.eu-north-1.elasticbeanstalk.com',
+    'http://localhost:4200',
+    'https://kit.fontawesome.com/a076d05399.js',
   ],
   optionsSuccessStatus: 200,
 };
@@ -51,7 +53,7 @@ app.use(
   })
 );
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'dist/tc-dungeonhelper/browser' )));
 
 app.use('/user', user); // users-reitti
 app.use('/randomEncounters', randomEncounterRouter);
@@ -67,6 +69,11 @@ app.use(
     saveUninitialized: true,
   })
 );
+
+app.use((req, res, next) => {
+  console.log(`Request received: ${req.method} ${req.url}`);
+  next();
+});
 
 const { body, validationResult } = require('express-validator');
 app.use([
@@ -84,10 +91,6 @@ app.post('/submit', (req, res) => {
   // ...
 });
 
-// catch 404 and forward to error handler
-app.use((req, res, next) => {
-  res.status(404).json({ error: 'Not Found' });
-});
 
 // error handler
 app.use(function (err, req, res, next) {
@@ -100,17 +103,21 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-app.use(express.static(path.join(__dirname, '/dist/browser/index.html' )));
-
-app.get('*', (req, res) => {
-  res.sendFile(
-    path.join(__dirname, '/dist/browser/', 'index.html')
-  );
-});
 
 // Kuunnellaan porttia, kun kaikki on määritetty
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(
+    path.join(__dirname, 'dist/tc-dungeonhelper/browser', 'index.html')
+  );
+});
+
+// catch 404 and forward to error handler
+app.use((req, res, next) => {
+  res.status(404).json({ error: 'Not Found' });
 });
 
 module.exports = app;
