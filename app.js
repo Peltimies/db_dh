@@ -31,8 +31,7 @@ app.set('view engine', 'ejs');
 const corsOptions = {
   origin: [
     'http://dunkku.eu-north-1.elasticbeanstalk.com',
-    'http://localhost:4200',
-    'https://kit.fontawesome.com/a076d05399.js',
+    'https://dunkku.eu-north-1.elasticbeanstalk.com',
   ],
   optionsSuccessStatus: 200,
   credentials: true
