@@ -19,6 +19,8 @@ const user = require('./routes/users');
 const merchants = require('./routes/merchants');
 const app = express();
 
+const PORT = process.env.PORT || 3000;
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -28,10 +30,9 @@ app.set('view engine', 'ejs');
 // backendi ei voi olla kenenkään muun kaveri kuin tässä määritetyn osoitteen
 const corsOptions = {
   origin: [
-    'http://localhost:4200',
-    'http://localhost:8080',
     'http://dunkku.eu-north-1.elasticbeanstalk.com',
     'https://dunkku.eu-north-1.elasticbeanstalk.com',
+    'https://kit.fontawesome.com/a076d05399.js',
   ],
   optionsSuccessStatus: 200,
   credentials: true,

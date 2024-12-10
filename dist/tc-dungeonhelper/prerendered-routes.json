@@ -1,0 +1,8 @@
+{
+  "routes": [
+    "/dashboard",
+    "/login",
+    "/merchants",
+    "/retables"
+  ]
+}
