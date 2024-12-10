@@ -32,6 +32,7 @@ const corsOptions = {
   origin: [
     'http://dunkku.eu-north-1.elasticbeanstalk.com',
     'https://dunkku.eu-north-1.elasticbeanstalk.com',
+    'https://kit.fontawesome.com/a076d05399.js'
   ],
   optionsSuccessStatus: 200,
   credentials: true
