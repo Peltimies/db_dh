@@ -23,20 +23,6 @@ const RandomEncounterController = {
         throw error;
       });
   },
-  // 2) Yhden biomen haku id:n perusteella
-  // findById(req, res) {
-  //   //Mongoose-kantaoperaatio tänne
-  //   //findOne-metodin argumenttina on olio, jossa on hakuehto
-  //   //kannassa olevan id:n (_id) on vastattava pyynnön mukana tulevaan id
-  //   RandomEncounter.findOne({ _id: _id })
-  //     // palautuva promise sisältää yhden opiskelijan
-  //     .then((encounters) => {
-  //       res.json(encounters);
-  //     })
-  //     .catch((error) => {
-  //       throw error;
-  //     });
-  // },
 
   findById(req, res) {
     const { biomeId } = req.params;
@@ -76,46 +62,69 @@ const RandomEncounterController = {
     });
   },
 
+  // Poisto Idn perusteella
   deleteById(req, res) {
     console.log('Deleting', req.params.id);
     RandomEncounter.findOneAndDelete({ _id: req.params.id });
     res.json('Encounter deleted');
   },
 
-  saveEnc(req, res) {
-    const biomeId = req.params.biomeId; // biomeId from URL params
-    const encId = req.params.encId; // encounterId from URL params
-    console.log(
-      `Saving encounter with ID: ${encId} to biome with ID: ${biomeId}`
-    );
+  // Tallennetaan kohtaamisen muutokset
+  async saveEnc(req, res) {
+    console.log('Updating encounter for biome:', req.params.biomeId);
+    console.log('Encounter ID:', req.params.encId);
+    console.log('Request body:', req.body);
 
-    if (!biomeId || !encId) {
-      return res
-        .status(400)
-        .json({ message: 'Biome ID and Encounter ID are required' });
+    try {
+      // Etsii biomen ID;n perusteella
+      const biome = await RandomEncounter.findById(req.params.biomeId);
+      if (!biome) {
+        console.log('Biome not found');
+        return res.status(404).json({ error: 'Biome not found' });
+      }
+
+      // Etsii kohtaamisen ensin ID;llä
+      let encounterIndex = biome.enc.findIndex(
+        (e) => e._id.toString() === req.params.encId
+      );
+
+      // ...jos sitä ei löydy sitten nimellä
+      if (encounterIndex === -1 && req.body.name) {
+        encounterIndex = biome.enc.findIndex((e) => e.name === req.body.name);
+      }
+
+      if (encounterIndex === -1) {
+        console.log('Update failed - encounter not found');
+        return res.status(404).json({ error: 'Encounter not found' });
+      }
+
+      // Pitää alkuperäisen IDn päivättäessä
+      const originalId = biome.enc[encounterIndex]._id;
+
+      // Päivittää kohtaamisen
+      biome.enc[encounterIndex] = {
+        _id: originalId, // Preserve the original ID
+        name: req.body.name,
+        description: req.body.description,
+        weight: req.body.weight,
+        roll: req.body.roll,
+        img: req.body.img,
+      };
+
+      const savedBiome = await biome.save();
+      console.log('Update successful');
+      res.json(savedBiome);
+    } catch (error) {
+      console.error('Error updating encounter:', error);
+      res.status(500).json({ error: 'Error updating encounter' });
     }
-
-    RandomEncounter.findOneAndUpdate(
-      { _id: biomeId, 'enc._id': encId },
-      { $set: { 'enc.$': req.body } },
-      { new: true }
-    )
-      .then((updatedEncounter) => {
-        if (!updatedEncounter) {
-          return res.status(404).json({ error: 'Biome not found' });
-        }
-        res.json(updatedEncounter);
-      })
-      .catch((err) => {
-        console.error('Error saving encounter:', err);
-        res.status(500).json({ error: 'Error saving encounter' });
-      });
   },
 
+  // Tämä toiminto lisää encounterin
   addEnc(req, res) {
     console.log('Adding encounter', req.body);
 
-    // Create the new encounter object
+    // Luodaan uusi newEncounter objekti
     const newEncounter = {
       name: req.body.name,
       description: req.body.description,
@@ -126,18 +135,20 @@ const RandomEncounterController = {
 
     console.log('New encounter object:', newEncounter);
 
-    // Update the RandomEncounter document by pushing to the enc array
+    // Päivitetään RandomEncounter dokumenttia, pushaamalla se enc taulukkoon
     RandomEncounter.findByIdAndUpdate(
-      req.params.id, // Match the RandomEncounter document by biome's ID from the URL
-      { $push: { enc: newEncounter } }, // Push the new encounter to the enc array
-      { new: true } // Return the updated document
+      req.params.id, // Mätsätään Encounterin dokumentti biomen ID:llä URLista
+      { $push: { enc: newEncounter } }, // Pushataan uusi encounteri newEncounter objektiin
+      { new: true } // Tämä palauttaa päivitetyn dokumentin
     )
+    // Virheenkäsittely, jos dokumentti on olemassa, console.logataan se
+    // Jos ei ole, palautetaan 404 error
       .then((updatedEncounter) => {
         console.log('Updated encounter:', updatedEncounter);
         if (!updatedEncounter) {
           return res.status(404).json({ error: 'Biome not found' });
         }
-        res.json(updatedEncounter); // Return the updated document with the new encounter
+        res.json(updatedEncounter); // Palautetaan påivitetty dokumentti, jossa on uusi encounter
       })
       .catch((err) => {
         console.error('Error adding encounter:', err);
@@ -145,35 +156,38 @@ const RandomEncounterController = {
       });
   },
 
+  // Poistaa encounterin
   deleteEnc(req, res) {
-    const biomeId = req.params.biomeId; // Get biome ID from URL
-    const encId = req.params.encId; // Get encounter ID from URL
-
-    if (!biomeId || !encId) {
+    const biomeId = req.params.biomeId; // Otetaan biome ID URLista
+    const encId = req.params.encId; // Otetaan encounter ID URLista
+    if (!biomeId || !encId) { // Virheen käsittely, tarkistetaan löytyykö URLista molemmat IDt
       return res
         .status(400)
         .json({ message: 'Biome ID and Encounter ID are required' });
     }
 
     RandomEncounter.findOneAndUpdate(
-      { _id: biomeId }, // Find the biome by its ID
-      { $pull: { enc: { _id: encId } } }, // Remove the encounter from the biome's "enc" array
-      { new: true } // Return the updated document
-    )
+      { _id: biomeId }, // Etsitään biome ID:n perusteella
+      { $pull: { enc: { _id: encId } } }, // Poistetaan pullilla encountteri biomen enc taulukosta
+      { new: true } // Tämä palauttaa päivitetyn dokumentin
+    ) // Virheenkäsittely, kaikki hyvin jos dokumentti on olemassa
+    // Ei hyvin, jos ei ole :(
       .then((updatedBiome) => {
         if (!updatedBiome) {
           return res
             .status(404)
             .json({ message: 'Biome or Encounter not found' });
         }
+        // Vahvistus viesti backendin puolella mikäli onnistuimme
         res.json({ message: 'Encounter deleted', updatedBiome });
       })
+      // Virheenkäsittely jne.
       .catch((err) => {
         console.error('Error deleting encounter:', err);
         res.status(500).json({ error: err.message });
       });
   },
-
+  // Biome taulukon lisaäminen
   addTable(req, res) {
     RandomEncounter.insertMany(req.body)
       .then((docs) => {
@@ -183,11 +197,11 @@ const RandomEncounterController = {
         console.error('Error inserting encounters:', err);
       });
   },
-
+  // Biome taulukon poisto
   deleteTable(req, res) {
-    const biomeId = req.params.id; // biomeId from URL params
+    const biomeId = req.params.id; // URL parametrit tarjoavat biomen ID:n
     console.log(`Deleting table with ID: ${biomeId}`);
-    RandomEncounter.findOneAndDelete({ _id: biomeId })
+    RandomEncounter.findOneAndDelete({ _id: biomeId }) // Etsitään biome ID:n perusteella ja poistetaan se
       .then((doc) => {
         if (!doc) {
           return res.status(404).json({ message: 'Table not found' });

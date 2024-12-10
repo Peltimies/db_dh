@@ -10,7 +10,16 @@ const RandomEncounterSchema = new mongoose.Schema({
     unique: true,
   },
   img: { type: String, required: false },
-  enc: { type: [EncounterSchema], required: true },
+  enc: {
+    type: [EncounterSchema],
+    required: true,
+    validate: {
+      validator: function(v) {
+        return v != null; // Allow empty array but not null
+      },
+      message: (props) => `${props.value} is not a valid encounters array`
+    }
+  },
 });
 
 //Muistiinpano, tähän varmaan pitää tehä toinen skeema rollille

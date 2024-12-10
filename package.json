@@ -7,6 +7,9 @@
     "test": "mocha"
   },
   "dependencies": {
+    "@aws-amplify/auth": "^6.7.0",
+    "@aws-amplify/ui-angular": "^5.0.32",
+    "amazon-cognito-identity-js": "^6.3.12",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "~1.4.6",
     "cors": "^2.8.5",
@@ -16,7 +19,7 @@
     "express": "^4.21.1",
     "express-session": "^1.18.0",
     "express-validator": "^7.1.0",
-    "google-auth-library": "^9.10.0",
+    "google-auth-library": "^9.15.0",
     "http-errors": "~2.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.1.1",
