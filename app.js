@@ -31,6 +31,7 @@ const corsOptions = {
     'http://localhost:4200',
     'http://localhost:8080',
     'http://dunkku.eu-north-1.elasticbeanstalk.com',
+    'https://dunkku.eu-north-1.elasticbeanstalk.com',
   ],
   optionsSuccessStatus: 200,
   credentials: true,
