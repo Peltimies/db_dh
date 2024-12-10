@@ -4,7 +4,7 @@ const router = express.Router();
 const merchCon = require('../controllers/merchantcontroller');
 const authorize = require('../verifytoken');
 
-router.get('/', merchCon.getMerchants);
+router.get('/', authorize, merchCon.getMerchants);
 
 //http://localhost:3000/merchants/create
 router.post('/create', authorize, merchCon.createMerchant);
