@@ -41,7 +41,7 @@ const corsOptions = {
 // corsin käyttöönotto
 app.use(cors(corsOptions));
 
-/**************Miidlewaren käyttöönottoa *****************/
+/************** Middlewarejen käyttöönotto *****************/
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
@@ -72,6 +72,11 @@ app.use(
     saveUninitialized: true,
   })
 );
+
+app.use((req, res, next) => {
+  console.log(`Request received: ${req.method} ${req.url}`);
+  next();
+});
 
 const { body, validationResult } = require('express-validator');
 app.use([
@@ -110,6 +115,22 @@ app.use(function (err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+// Kuunnellaan porttia, kun kaikki on määritetty
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(
+    path.join(__dirname, 'dist/tc-dungeonhelper/browser/login', 'index.html')
+  );
+});
+
+// catch 404 and forward to error handler
+app.use((req, res, next) => {
+  res.status(404).json({ error: 'Not Found' });
 });
 
 module.exports = app;
