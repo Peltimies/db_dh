@@ -112,7 +112,7 @@ app.listen(PORT, () => {
 
 app.get('*', (req, res) => {
   res.sendFile(
-    path.join(__dirname, 'dist/tc-dungeonhelper/browser', 'index.html')
+    path.join(__dirname, 'dist/tc-dungeonhelper/browser/login', 'index.html')
   );
 });
 
