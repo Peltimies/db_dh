@@ -27,9 +27,13 @@ app.set('view engine', 'ejs');
 // Siihen saadaan yhteys corsin ansiosta
 // backendi ei voi olla kenenkään muun kaveri kuin tässä määritetyn osoitteen
 const corsOptions = {
-  origin: ['http://localhost:4200', 'http://localhost:8080'],
+  origin: [
+    'http://localhost:4200',
+    'http://localhost:8080',
+    'http://dunkku.eu-north-1.elasticbeanstalk.com',
+  ],
   optionsSuccessStatus: 200,
-  credentials: true
+  credentials: true,
 };
 
 // corsin käyttöönotto
