@@ -14,7 +14,8 @@ const MerchantController = {
         res.json(re);
       })
       .catch((error) => {
-        throw error;
+        console.error('Error fetching merchants:', error);
+        res.status(500).json({ error: 'Error fetching merchants' });
       });
   },
   async createMerchant(req, res) {
