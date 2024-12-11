@@ -30,6 +30,8 @@ app.set('view engine', 'ejs');
 // backendi ei voi olla kenenkään muun kaveri kuin tässä määritetyn osoitteen
 const corsOptions = {
   origin: [
+    'http://localhost:3000',
+    'http://localhost:4200',
     'http://dunkku.eu-north-1.elasticbeanstalk.com',
     'https://dunkku.eu-north-1.elasticbeanstalk.com',
     'https://kit.fontawesome.com/a076d05399.js',
@@ -57,7 +59,7 @@ app.use(express.json());
 // API routes first
 app.use('/users', user); // users-reitti
 app.use('/randomEncounters', randomEncounterRouter);
-app.use('/merchants', merchants);
+app.use('/api/merchants', merchants);
 
 // Static files after API routes
 app.use(express.static(path.join(__dirname, 'public')));
